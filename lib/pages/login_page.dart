@@ -32,57 +32,203 @@ class _LoginPageState extends State<LoginPage> {
       if (mounted){
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Error: $e")));
+        debugPrint("Supabase sign-up error: $e");
       }
     }
+  }
+
+  //login with google pressed
+  void googleLogin() async {  //add functionality later
+
   }
 
   //UI for login page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        padding: EdgeInsets.all(15.0),
-        children: [
-          //remove later
-          SizedBox(height: 150,),
+      backgroundColor: const Color(0xFFAAEA61),
+      body: Center(
+        child: ListView(
+          padding: EdgeInsets.all(30.0),
+          children: [
+            //spacing
+            SizedBox(height: 50),
 
-          //email
-          TextField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: "Email"),
-          ),
+            Image.asset('assets/images/Logo.png',
+              width: 100,
+              height: 100,
+            ),
 
-          //password
-          TextField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: "Password"),
-          ),
-
-          //login button
-          ElevatedButton(
-              onPressed: login,
-              child: const Text(
-                "Sign in"
-              )
-          ),
-
-          //direct user to forgot password option
-          Text("Forgot Password?"),
-
-          //direct user to register page
-          Row(
-            children: [
-              Text("Don't have an account? "),
-              GestureDetector(
-                  onTap: () => Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => const RegisterPage(),
-                  )),
-                  child: Text(
-                      "Register")
+            //spacing
+            SizedBox(height: 20),
+        
+            const Text(
+              "Shared lists, fewer trips.",
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 35,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF333333),
               ),
-            ],
-          ),
-        ],
+              textAlign: TextAlign.center,
+            ),
+
+            //spacing
+            SizedBox(height: 60),
+
+            // email
+            SizedBox(
+              width: double.infinity,
+              child: TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Email",
+                  hintStyle: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 15,
+                    color: Color(0xFF1B1B1B),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 15),
+
+            // password
+            SizedBox(
+              width: double.infinity,
+              child: TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Password",
+                  hintStyle: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 15,
+                    color: Color(0xFF1B1B1B),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+
+            //spacing
+            SizedBox(height: 15),
+
+            // login button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B1B1B),
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  "Sign in",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+
+            //spacing
+            SizedBox(height: 15),
+
+            // login with google button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: googleLogin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Continue with Google",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Inter',
+                        color: Color(0xFF1B1B1B),
+                      ),
+                    ),
+                    Image.asset(
+                        'assets/images/google-logo.png',
+                      width: 50,
+                      height: 50,
+                    )
+                  ]
+                ),
+              ),
+            ),
+
+            //spacing
+            SizedBox(height: 30,),
+
+            //direct user to forgot password option
+            Text("Forgot Password?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Inter',
+              ),
+            ),
+
+            //spacing
+            SizedBox(height: 5,),
+            //direct user to register page
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Don't have an account? ",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontFamily: 'Inter',
+                  ),
+                ),
+                GestureDetector(
+                    onTap: () => Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => const RegisterPage(),
+                    )),
+                    child:
+                    Text("Register",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Inter',
+                        color: Colors.white
+                      ),)
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
