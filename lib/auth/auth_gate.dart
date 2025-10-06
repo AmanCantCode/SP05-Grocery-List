@@ -2,9 +2,8 @@
 // if un_auth : login page
 // if auth : main (home) page
 import 'package:flutter/material.dart';
-import 'package:sp_grocery_list/pages/homepage.dart';
+import 'package:sp_grocery_list/components/nav.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../pages/login_page.dart';
 
 class AuthGate extends StatelessWidget {
@@ -30,7 +29,7 @@ class AuthGate extends StatelessWidget {
         final session = snapshot.hasData ? snapshot.data!.session : null;
 
         if (session != null){
-          return Homepage(); //change later if needed
+          return Navigation();
         }
         else{
           return LoginPage();
