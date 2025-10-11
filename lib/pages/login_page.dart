@@ -38,8 +38,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   //login with google pressed
-  void googleLogin() async {  //add functionality later
+  void googleLogin() async {
+    try {
+      await authService.googleSignIn();
 
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Google Sign-In Error: ${e.toString()}")),
+        );
+      }
+      debugPrint("Google Sign-In error: $e");
+    }
   }
 
   //UI for login page
