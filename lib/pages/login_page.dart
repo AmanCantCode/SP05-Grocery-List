@@ -41,7 +41,6 @@ class _LoginPageState extends State<LoginPage> {
   void googleLogin() async {
     try {
       await authService.googleSignIn();
-
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

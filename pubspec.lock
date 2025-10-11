@@ -152,6 +152,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.4"
+<<<<<<< HEAD
   google_identity_services_web:
     dependency: transitive
     description:
@@ -160,6 +161,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3+1"
+=======
+>>>>>>> 12fb79428818ac0cb59b95b5f0c4a7ffecd36a66
   google_nav_bar:
     dependency: "direct main"
     description:
@@ -168,6 +171,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.7"
+<<<<<<< HEAD
   google_sign_in:
     dependency: "direct main"
     description:
@@ -208,6 +212,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.4+4"
+=======
+>>>>>>> 12fb79428818ac0cb59b95b5f0c4a7ffecd36a66
   gotrue:
     dependency: transitive
     description:
