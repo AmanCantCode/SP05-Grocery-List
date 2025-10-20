@@ -39,7 +39,6 @@ class _GroupsPageState extends State<GroupsPage> {
     }
   }
 
-  // --- Create Group Logic ---
   Future<void> _createGroup() async {
     final nameController = TextEditingController();
 
@@ -195,62 +194,204 @@ class _GroupsPageState extends State<GroupsPage> {
     );
   }
 
-  // --- Bottom Sheet for Create/Join ---
-  void _showCreateOrJoinSheet() {
-    showModalBottomSheet(
+  void _showCreateOrJoinDialog() {
+    showDialog(
       context: context,
+      barrierDismissible: true, // tap outside to close
+      barrierColor: Colors.black54, // dim background
       builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.group_add),
-              title: const Text('Create New Group'),
-              onTap: () {
-                Navigator.pop(context);
-                _createGroup();
-              },
+        return Center(
+          child: Container(
+            width: 300,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.link),
-              title: const Text('Join Group with Code'),
-              onTap: () {
-                Navigator.pop(context);
-                _joinGroup();
-              },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildOptionButton(
+                  text: 'Create New Group',
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _createGroup();
+                  },
+                ),
+                const SizedBox(height: 15),
+                _buildOptionButton(
+                  text: 'Join a Group',
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _joinGroup();
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
   }
 
-  // --- UI ---
+
+  Widget _buildOptionButton({
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: 400,
+      height: 75,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: const Color(0xFFAAEA61),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 20,
+            color: Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Groups')),
-      body: _groups.isEmpty
-          ? const Center(child: Text('No groups yet'))
-          : ListView.builder(
-        itemCount: _groups.length,
-        itemBuilder: (context, index) {
-          final group = _groups[index];
-          return ListTile(
-            title: Text(group['name']),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => GroupPage(group: group),
+      appBar:
+      AppBar(
+        toolbarHeight: 70.0,
+        backgroundColor: const Color(0xFFAAEA61),
+        title: Padding(
+          padding: const EdgeInsets.only(top: 15.0, bottom: 20.0),
+          child: Image.asset('assets/images/Logo.png',
+            width: 50,
+            height: 50,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: [
+          SizedBox(height: 5,),
+          SizedBox(
+            width: 195,
+            height: 120,
+            child: Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF333333),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.black87,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _showCreateOrJoinDialog,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: _showCreateOrJoinDialog,
+                  child: Center(
+                    child: Text(
+                      'Start a new family!',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+
               ),
             ),
-          );
-        },
+          ),
+
+          // --- Group List ---
+          if (_groups.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(top: 40),
+              child: Center(child: Text('No groups yet')),
+            )
+          else
+            ..._groups.map((group) {
+              return SizedBox(
+                width: 195,
+                height: 120,
+                child: Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFAAEA61),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  // child: ListTile(
+                  //   title: Text(
+                  //     group['name'],
+                  //     style: const TextStyle(
+                  //       fontFamily: 'Poppins',
+                  //       fontSize: 25,
+                  //       fontWeight: FontWeight.bold,
+                  //       color: Colors.black87,
+                  //     ),
+                  //     textAlign: TextAlign.center,
+                  //   ),
+                  //   onTap: () => Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (_) => GroupPage(group: group),
+                  //     ),
+                  //   ),
+                  // ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12), // matches container
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => GroupPage(group: group),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        group['name'],
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateOrJoinSheet,
-        child: const Icon(Icons.add),
-      ),
+
     );
   }
 }
