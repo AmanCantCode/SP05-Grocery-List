@@ -333,7 +333,17 @@ class _GroupsPageState extends State<GroupsPage> {
           if (_groups.isEmpty)
             const Padding(
               padding: EdgeInsets.only(top: 40),
-              child: Center(child: Text('No groups yet')),
+              child: Center(
+                  child:
+                  Text('No groups yet',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 25,
+                      fontWeight: FontWeight.normal,
+                      color: Color(0xFF333333),
+                    ),
+                  )
+              ),
             )
           else
             ..._groups.map((group) {
