@@ -74,14 +74,58 @@ class _GroupPageState extends State<GroupPage> {
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Add Item'),
+        // --- DIALOG STYLING ---
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        // ----------------------
+
+        title: const Text(
+          'Add Item',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: 'Item name'),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFFEEEEEE), // Light background for input
+            hintText: 'Item name',
+            hintStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              color: Color(0xFF6E6E6E),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: Color(0xFF333333),
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6E6E6E),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+
+          ElevatedButton(
             onPressed: () async {
               final item = controller.text.trim();
               if (item.isEmpty) return;
@@ -92,37 +136,107 @@ class _GroupPageState extends State<GroupPage> {
                 'name': item,
               });
 
-              Navigator.pop(context);
+              if (mounted) Navigator.pop(context);
               await _fetchItems();
             },
-            child: const Text('Save'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF333333),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
     );
   }
 
+
+
   Future<void> _deleteItem(String id) async {
     await supabase.from('grocery_items').delete().eq('id', id);
     _fetchItems();
   }
+
 
   Future<void> _editItem(String id, String currentName) async {
     final controller = TextEditingController(text: currentName);
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Edit Item'),
-        content: TextField(controller: controller),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        title: const Text(
+          'Edit Item',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFFEEEEEE),
+            hintText: 'New item name',
+            hintStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              color: Color(0xFF6E6E6E),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: Color(0xFF333333),
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6E6E6E),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+
+          ElevatedButton(
             onPressed: () async {
-              await supabase.from('grocery_items').update({'name': controller.text}).eq('id', id);
-              Navigator.pop(context);
+              final newName = controller.text.trim();
+              if (newName.isEmpty) return;
+              await supabase.from('grocery_items').update({'name': newName}).eq('id', id);
+
+              if (mounted) Navigator.pop(context);
               _fetchItems();
             },
-            child: const Text('Save'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF333333),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -190,19 +304,14 @@ class _GroupPageState extends State<GroupPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. Clickable Initial Icon / Checkmark
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0, top: 32),
                   child: GestureDetector(
                     onTap: () async {
                       final newValue = !(item['is_checked'] ?? false);
-
-                      // Optimistically update UI
                       setState(() {
                         item['is_checked'] = newValue;
                       });
-
-                      // Update in database
                       await supabase
                           .from('grocery_items')
                           .update({'is_checked': newValue})
@@ -244,7 +353,6 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ),
 
-                // 2. Name and Item Box
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +371,6 @@ class _GroupPageState extends State<GroupPage> {
                         ),
                       ),
 
-                      // Item Box
                       Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFFAAEA61),
@@ -311,15 +418,6 @@ class _GroupPageState extends State<GroupPage> {
                               child: Padding(
                                 padding:
                                 const EdgeInsets.only(left: 15.0, right: 15.0),
-                                // child: Text(
-                                //   item['name'],
-                                //   style: const TextStyle(
-                                //     fontFamily: 'Inter',
-                                //     fontSize: 20,
-                                //     fontWeight: FontWeight.normal,
-                                //     color: Color(0xFF333333),
-                                //   ),
-                                // ),
                                 child: Text(
                                   item['name'],
                                   style: TextStyle(

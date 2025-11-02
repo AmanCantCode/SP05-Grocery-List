@@ -41,25 +41,61 @@ class _GroupsPageState extends State<GroupsPage> {
 
   Future<void> _createGroup() async {
     final nameController = TextEditingController();
-
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Create Group'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        title: const Text(
+          'Create Group',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(hintText: 'Group name'),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFFEEEEEE),
+            hintText: 'Group name',
+            hintStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              color: Color(0xFF6E6E6E),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: Color(0xFF333333),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6E6E6E),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
           ),
-          TextButton(
+
+          ElevatedButton(
             onPressed: () async {
               final name = nameController.text.trim();
               if (name.isEmpty) return;
-
               final code = DateTime.now().millisecondsSinceEpoch;
 
               try {
@@ -77,15 +113,53 @@ class _GroupsPageState extends State<GroupsPage> {
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                      title: const Text('Group Created!'),
-                      content: Text('Invite Code: $code'),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      title: const Text(
+                        'Group Created!',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Share this code with your friends:',
+                            style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: Color(0xFF333333)),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '$code',
+                            style: const TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFAAEA61), // Green for emphasis
+                            ),
+                          ),
+                        ],
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                             _fetchGroups();
                           },
-                          child: const Text('OK'),
+                          child: const Text(
+                            'Done',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF333333),
+                            ),
+                          ),
                         )
                       ],
                     ),
@@ -94,42 +168,90 @@ class _GroupsPageState extends State<GroupsPage> {
               } catch (e) {
                 _showSnackbar('Error creating group: ${e.toString()}');
                 debugPrint("Error creating group: $e");
+                if(mounted) Navigator.pop(context);
               }
             },
-            child: const Text('Create'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF333333),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Create',
+              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
     );
   }
 
-  // --- Join Group Logic ---
   Future<void> _joinGroup() async {
     final codeController = TextEditingController();
 
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Join Group'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        title: const Text(
+          'Join Group',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
         content: TextField(
           controller: codeController,
           keyboardType: TextInputType.number,
-          decoration: const InputDecoration(hintText: 'Enter Invite Code'),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFFEEEEEE),
+            hintText: 'Enter Invite Code',
+            hintStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              color: Color(0xFF6E6E6E),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: Color(0xFF333333),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6E6E6E),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
           ),
-          TextButton(
+
+          ElevatedButton(
             onPressed: () async {
               final codeText = codeController.text.trim();
               if (codeText.isEmpty) {
+                // Assuming _showSnackbar is available
                 _showSnackbar('Please enter an invite code.');
                 return;
               }
 
-              // Convert to int for bigint column
               final codeValue = int.tryParse(codeText);
               if (codeValue == null) {
                 _showSnackbar('Invalid invite code format.');
@@ -143,14 +265,11 @@ class _GroupsPageState extends State<GroupsPage> {
                   return;
                 }
 
-                // 1. Check if group exists
                 final groupResponse = await supabase
                     .from('groups')
                     .select('id')
                     .eq('invite_code', codeValue)
                     .maybeSingle();
-
-                debugPrint('Group Query Response: $groupResponse');
 
                 if (groupResponse == null) {
                   _showSnackbar('No group found with that invite code.');
@@ -159,7 +278,6 @@ class _GroupsPageState extends State<GroupsPage> {
 
                 final groupId = groupResponse['id'] as String;
 
-                // 2. Check if user is already in group
                 final existingMember = await supabase
                     .from('group_members')
                     .select()
@@ -172,14 +290,13 @@ class _GroupsPageState extends State<GroupsPage> {
                   return;
                 }
 
-                // 3. Add user to group
                 await supabase.from('group_members').insert({
                   'group_id': groupId,
                   'user_id': currentUser.id,
                   'role': 'member',
                 });
 
-                _showSnackbar('Successfully joined the group!');
+                _showSnackbar('Successfully joined the group! 🎉');
                 if (mounted) Navigator.pop(context);
                 await _fetchGroups();
               } catch (error) {
@@ -187,7 +304,17 @@ class _GroupsPageState extends State<GroupsPage> {
                 debugPrint('Error joining group: $error');
               }
             },
-            child: const Text('Join'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF333333),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Join',
+              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -197,8 +324,8 @@ class _GroupsPageState extends State<GroupsPage> {
   void _showCreateOrJoinDialog() {
     showDialog(
       context: context,
-      barrierDismissible: true, // tap outside to close
-      barrierColor: Colors.black54, // dim background
+      barrierDismissible: true,
+      barrierColor: Colors.black54,
       builder: (BuildContext context) {
         return Center(
           child: Container(
@@ -206,10 +333,10 @@ class _GroupsPageState extends State<GroupsPage> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(15),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black26,
+                  color: Colors.black.withOpacity(0.15),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -218,20 +345,69 @@ class _GroupsPageState extends State<GroupsPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildOptionButton(
-                  text: 'Create New Group',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _createGroup();
-                  },
+                const Text(
+                  'Group Options',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
                 ),
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF333333),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _createGroup();
+                    },
+                    child: const Text(
+                      'Create New Group',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: 15),
-                _buildOptionButton(
-                  text: 'Join a Group',
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _joinGroup();
-                  },
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFAAEA61),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _joinGroup();
+                    },
+                    child: const Text(
+                      'Join a Group',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        color: Color(0xFF333333),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -240,7 +416,6 @@ class _GroupsPageState extends State<GroupsPage> {
       },
     );
   }
-
 
   Widget _buildOptionButton({
     required String text,
@@ -329,7 +504,6 @@ class _GroupsPageState extends State<GroupsPage> {
             ),
           ),
 
-          // --- Group List ---
           if (_groups.isEmpty)
             const Padding(
               padding: EdgeInsets.only(top: 40),
@@ -357,26 +531,8 @@ class _GroupsPageState extends State<GroupsPage> {
                     color: const Color(0xFFAAEA61),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  // child: ListTile(
-                  //   title: Text(
-                  //     group['name'],
-                  //     style: const TextStyle(
-                  //       fontFamily: 'Poppins',
-                  //       fontSize: 25,
-                  //       fontWeight: FontWeight.bold,
-                  //       color: Colors.black87,
-                  //     ),
-                  //     textAlign: TextAlign.center,
-                  //   ),
-                  //   onTap: () => Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (_) => GroupPage(group: group),
-                  //     ),
-                  //   ),
-                  // ),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(12), // matches container
+                    borderRadius: BorderRadius.circular(12),
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
