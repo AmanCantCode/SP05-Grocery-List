@@ -388,14 +388,30 @@ class _GroupPageState extends State<GroupPage> {
                           direction:
                           canModify ? DismissDirection.horizontal : DismissDirection.none,
                           background: Container(
-                            color: const Color(0xFFE5F5C0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE5F5C0),
+                              borderRadius:
+                              BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                            ),
+                            //color: const Color(0xFFE5F5C0),
                             alignment: Alignment.centerLeft,
                             padding: const EdgeInsets.only(left: 20),
                             child: const Icon(Icons.mode_edit_outlined,
                                 color: Colors.black, size: 30),
                           ),
                           secondaryBackground: Container(
-                            color: const Color(0xFFFF6666),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFF6666),
+                                borderRadius:
+                                  BorderRadius.only(
+                                      topRight: Radius.circular(12),
+                                      bottomRight: Radius.circular(12),
+                                  ),
+                            ),
+                            //color: const Color(0xFFFF6666),
                             alignment: Alignment.centerRight,
                             padding: const EdgeInsets.only(right: 20),
                             child: const Icon(Icons.delete_outline_outlined,
