@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:sp_grocery_list/pages/homepage.dart';
-import 'package:sp_grocery_list/pages/shopping_page.dart';
+import 'package:sp_grocery_list/pages/third_party_integration/nutrition_page.dart';
 import 'package:sp_grocery_list/pages/user_account_page.dart';
 
 class Navigation extends StatefulWidget {
@@ -18,7 +18,8 @@ class _NavigationState extends State<Navigation> {
   // List of pages for each tab
   final List<Widget> _pages = [
     HomePage(),
-    ShoppingPage(),
+    //ShoppingPage(),
+    NutritionScreen(),
     UserAccountPage(),
   ];
 
