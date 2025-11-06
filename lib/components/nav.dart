@@ -18,7 +18,6 @@ class _NavigationState extends State<Navigation> {
   // List of pages for each tab
   final List<Widget> _pages = [
     HomePage(),
-    //ShoppingPage(),
     NutritionScreen(),
     UserAccountPage(),
   ];
@@ -47,7 +46,7 @@ class _NavigationState extends State<Navigation> {
             },
             tabs: [
               GButton(icon: Icons.home),
-              GButton(icon: Icons.shopping_cart),
+              GButton(icon: Icons.restaurant),
               GButton(icon: Icons.account_circle),
             ]
           ),
