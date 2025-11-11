@@ -74,12 +74,10 @@ class _GroupPageState extends State<GroupPage> {
     await showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        // --- DIALOG STYLING ---
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
-        // ----------------------
 
         title: const Text(
           'Add Item',
@@ -243,6 +241,80 @@ class _GroupPageState extends State<GroupPage> {
     );
   }
 
+  Future<void> _confirmDeleteAll() async {
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+
+        title: const Text(
+          'Delete All Items',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
+        content: const Text(
+          'This will permanently remove all grocery items in this group.',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: Color(0xFF333333),
+          ),
+        ),
+
+        actions: [
+          // Cancel Button
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6E6E6E),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+
+          // Delete Button
+          ElevatedButton(
+            onPressed: () async {
+              await supabase
+                  .from('grocery_items')
+                  .delete()
+                  .eq('group_id', widget.group['id']);
+
+              if (mounted) Navigator.pop(context);
+              await _fetchItems();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF333333),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Delete',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -263,17 +335,88 @@ class _GroupPageState extends State<GroupPage> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF333333), size: 30,),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => GroupInfoPage(group: widget.group),
+          actions: [
+            if (_currentUserRole == 'admin')
+              PopupMenuButton<String>(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 6,
+                icon: const Icon(
+                  Icons.more_vert_rounded,
+                  color: Color(0xFF333333),
+                  size: 26,
+                ),
+                onSelected: (value) {
+                  if (value == 'info') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => GroupInfoPage(group: widget.group),
+                      ),
+                    );
+                  } else if (value == 'delete_all') {
+                    _confirmDeleteAll();
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'info',
+                    child: Row(
+                      children: const [
+                        Icon(Icons.info_outline, size: 20, color: Color(0xFF333333)),
+                        SizedBox(width: 10),
+                        Text(
+                          "Group Info",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            color: Color(0xFF333333),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete_all',
+                    child: Row(
+                      children: const [
+                        Icon(Icons.delete_outline, size: 20, color: Color(0xFFE53935)),
+                        SizedBox(width: 10),
+                        Text(
+                          "Delete All Items",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 15,
+                            color: Color(0xFFE53935),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            else
+              IconButton(
+                icon: const Icon(
+                  Icons.more_vert_rounded,
+                  color: Color(0xFF333333),
+                  size: 26,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => GroupInfoPage(group: widget.group),
+                    ),
+                  );
+                },
               ),
-            ),
-          ),
-        ],
+          ]
+
+
       ),
       body: _items.isEmpty
           ? const Center(

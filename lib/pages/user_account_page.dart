@@ -51,7 +51,9 @@ class _UserAccountPageState extends State<UserAccountPage> {
       ));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Name updated successfully!')),
+          const SnackBar(content: Text('Name updated successfully!'),
+            duration: Duration(seconds: 2)
+          ),
         );
       }
       setState(() {
@@ -66,6 +68,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
     }
   }
 
+  //not being used due to no storage bucket set up in supabase
   Future<void> _uploadAvatar() async {
     final user = _authService.getCurrentUser();
     if (user == null) return;
@@ -93,7 +96,9 @@ class _UserAccountPageState extends State<UserAccountPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile picture updated!')),
+          const SnackBar(content: Text('Profile picture updated!'),
+            duration: Duration(seconds: 2)
+          ),
         );
       }
     } catch (e) {
@@ -169,7 +174,17 @@ class _UserAccountPageState extends State<UserAccountPage> {
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
                 hintText: 'Enter display name',
-                border: OutlineInputBorder(),
+                hintStyle: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 15,
+                  color: Color(0xFF1B1B1B),
+                ),
+                contentPadding: EdgeInsets.only(top:15, left: 10, bottom: 10),
+                filled: true,
+                fillColor: Color(0xFFF3F3F3),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                ),
               ),
             )
                 : Text(
@@ -182,7 +197,13 @@ class _UserAccountPageState extends State<UserAccountPage> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: Icon(_isEditing ? Icons.save : Icons.edit),
-              label: Text(_isEditing ? 'Save Name' : 'Edit'),
+              label: Text(_isEditing ? 'Save Name' : 'Edit',
+                style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 15,
+                color: Color(0xFF1B1B1B),
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFAAEA61),
                 foregroundColor: Colors.black,
@@ -233,6 +254,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
           ],
         ),
       ),
+      backgroundColor: Colors.white,
     );
   }
 }

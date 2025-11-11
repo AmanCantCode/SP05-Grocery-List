@@ -191,9 +191,13 @@ class _NutritionScreenState extends State<NutritionScreen> {
                   child: TextFormField(
                     controller: _queryController,
                     decoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(top:15, left: 10, bottom: 10),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Color(0xFFF3F3F3),//Color(0xFFF3F3F3),
                       hintText: "Search food item",
+                      // enabledBorder: OutlineInputBorder(
+                      //   borderSide: BorderSide(color: Color(0xFF333333), width: 1.0),
+                      // ),
                       hintStyle: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 15,
@@ -288,6 +292,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
           ],
         ),
       ),
+      backgroundColor: Colors.white,
     );
   }
 

@@ -44,7 +44,6 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
     });
   }
 
-  // Copy invite code to clipboard
   Future<void> _copyInviteCode(String code) async {
     await Clipboard.setData(ClipboardData(text: code));
     if (mounted) {
@@ -56,103 +55,6 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
       );
     }
   }
-
-  // --- Group Deletion Logic (Admin Only) ---
-
-  // Future<void> _deleteGroup() async {
-  //   final bool confirm = await showDialog(
-  //     context: context,
-  //     builder: (_) => AlertDialog(
-  //       title: const Text('Delete Group'),
-  //       content: const Text(
-  //           'Are you sure you want to delete this group? All items and memberships will be permanently deleted.'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context, false),
-  //           child: const Text('Cancel'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context, true),
-  //           child: const Text('Delete', style: TextStyle(color: Colors.red)),
-  //         ),
-  //       ],
-  //     ),
-  //   ) ?? false;
-  //
-  //   if (confirm) {
-  //     try {
-  //       await supabase.rpc(
-  //         'delete_group_and_data',
-  //         params: {'target_group_id': widget.group['id']},
-  //       );
-  //
-  //       if (mounted) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Group deleted successfully!')),
-  //         );
-  //         Navigator.of(context).pop();
-  //         Navigator.of(context).pop();
-  //       }
-  //     } catch (e) {
-  //       if (mounted) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Error deleting group: ${e.toString()}')),
-  //         );
-  //       }
-  //       debugPrint('Delete Group Error: $e');
-  //     }
-  //   }
-  // }
-  //
-  // // --- NEW: Leave Group Logic (Member Only) ---
-  //
-  // Future<void> _leaveGroup() async {
-  //   final bool confirm = await showDialog(
-  //     context: context,
-  //     builder: (_) => AlertDialog(
-  //       title: const Text('Leave Group'),
-  //       content: const Text(
-  //           'Are you sure you want to leave this group? You will lose access to the list.'),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context, false),
-  //           child: const Text('Cancel'),
-  //         ),
-  //         TextButton(
-  //           onPressed: () => Navigator.pop(context, true),
-  //           child: const Text('Leave', style: TextStyle(color: Colors.red)),
-  //         ),
-  //       ],
-  //     ),
-  //   ) ?? false;
-  //
-  //   if (confirm) {
-  //     try {
-  //       // Delete the group_members record for the current user and group
-  //       await supabase
-  //           .from('group_members')
-  //           .delete()
-  //           .eq('group_id', widget.group['id'])
-  //           .eq('user_id', supabase.auth.currentUser!.id);
-  //
-  //       if (mounted) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Successfully left the group!')),
-  //         );
-  //         // Navigate back to the main Groups list
-  //         Navigator.of(context).pop();
-  //         Navigator.of(context).pop();
-  //       }
-  //     } catch (e) {
-  //       if (mounted) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('Error leaving group: ${e.toString()}')),
-  //         );
-  //       }
-  //       debugPrint('Leave Group Error: $e');
-  //     }
-  //   }
-  // }
 
   Future<void> _deleteGroup() async {
     final bool confirm = await showDialog(
@@ -220,8 +122,8 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Group deleted successfully!')),
           );
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          Navigator.pop(context, true);
+          Navigator.pop(context, true);
         }
       } catch (e) {
         if (mounted) {
@@ -301,8 +203,8 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Successfully left the group!')),
           );
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          Navigator.pop(context, true);
+          Navigator.pop(context, true);
         }
       } catch (e) {
         if (mounted) {
@@ -438,7 +340,6 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
                   ? //delete group button
               ElevatedButton(
                 onPressed: _deleteGroup,
-                child: const Text('DELETE GROUP', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF6666),
                   foregroundColor: Colors.white,
@@ -447,11 +348,11 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
+                child: const Text('DELETE GROUP', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold)),
               )
                   : //leave group button
               ElevatedButton(
                 onPressed: _leaveGroup,
-                child: const Text('LEAVE GROUP', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF333333),
                   foregroundColor: Colors.white,
@@ -460,6 +361,7 @@ class _GroupInfoPageState extends State<GroupInfoPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
+                child: const Text('LEAVE GROUP', style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold)),
               ),
             ),
           ),

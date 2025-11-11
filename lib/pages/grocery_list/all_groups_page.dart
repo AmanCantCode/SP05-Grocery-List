@@ -247,7 +247,6 @@ class _GroupsPageState extends State<GroupsPage> {
             onPressed: () async {
               final codeText = codeController.text.trim();
               if (codeText.isEmpty) {
-                // Assuming _showSnackbar is available
                 _showSnackbar('Please enter an invite code.');
                 return;
               }
@@ -533,12 +532,19 @@ class _GroupsPageState extends State<GroupsPage> {
                   ),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => GroupPage(group: group),
-                      ),
-                    ),
+                    onTap: () async {
+                      final refresh = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => GroupPage(group: group),
+                        ),
+                      );
+
+                      if (refresh == true) {
+                        _fetchGroups();
+                      }
+                    },
+
                     child: Center(
                       child: Text(
                         group['name'],
@@ -557,7 +563,7 @@ class _GroupsPageState extends State<GroupsPage> {
             }).toList(),
         ],
       ),
-
+      backgroundColor: Colors.white,
     );
   }
 }
