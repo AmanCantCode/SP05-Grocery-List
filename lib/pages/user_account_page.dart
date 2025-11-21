@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sp_grocery_list/auth/auth_service.dart';
@@ -45,17 +44,26 @@ class _UserAccountPageState extends State<UserAccountPage> {
 
     try {
       setState(() => _isLoading = true);
+
       await _authService.updateDisplayName(newName);
-      await _supabase.auth.updateUser(UserAttributes(
-        data: {'display_name': newName, 'avatar_url': _avatarUrl},
-      ));
+      await _supabase.auth.updateUser(
+        UserAttributes(
+          data: {
+            'display_name': newName,
+            'avatar_url': _avatarUrl,
+          },
+        ),
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Name updated successfully!'),
-            duration: Duration(seconds: 2)
+          const SnackBar(
+            content: Text('Name updated successfully!'),
+            duration: Duration(seconds: 2),
           ),
         );
       }
+
       setState(() {
         _displayName = newName;
         _isEditing = false;
@@ -68,45 +76,89 @@ class _UserAccountPageState extends State<UserAccountPage> {
     }
   }
 
-  //not being used due to no storage bucket set up in supabase
-  Future<void> _uploadAvatar() async {
-    final user = _authService.getCurrentUser();
-    if (user == null) return;
+  void _showEditNameDialog() {
+    final TextEditingController controller =
+    TextEditingController(text: _displayName);
 
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile == null) return;
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
 
-    setState(() => _isLoading = true);
-
-    final file = File(pickedFile.path);
-    final fileExt = file.path.split('.').last;
-    final fileName = '${user.id}.$fileExt';
-
-    try {
-      await _supabase.storage.from('avatars').upload(fileName, file,
-          fileOptions: const FileOptions(upsert: true));
-
-      final publicUrl =
-      _supabase.storage.from('avatars').getPublicUrl(fileName);
-
-      await _supabase.auth.updateUser(
-          UserAttributes(data: {'avatar_url': publicUrl, 'display_name': _displayName}));
-
-      setState(() => _avatarUrl = publicUrl);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile picture updated!'),
-            duration: Duration(seconds: 2)
+        title: const Text(
+          'Edit Name',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
           ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Upload failed: $e')));
-    } finally {
-      setState(() => _isLoading = false);
-    }
+        ),
+
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: const Color(0xFFEEEEEE),
+            hintText: 'Enter your name',
+            hintStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              color: Color(0xFF6E6E6E),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            color: Color(0xFF333333),
+          ),
+        ),
+
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: Color(0xFF6E6E6E),
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
+
+          ElevatedButton(
+            onPressed: () async {
+              final newName = controller.text.trim();
+              if (newName.isEmpty) return;
+
+              Navigator.pop(context);
+
+              _nameController.text = newName; // keeps your existing logic working
+              await _updateDisplayName();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF333333),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _signOut() async {
@@ -120,23 +172,17 @@ class _UserAccountPageState extends State<UserAccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Profile',
+        title: const Text(
+          'User Profile',
           style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF333333),
-        ),
+            fontFamily: 'Poppins',
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
         ),
         toolbarHeight: 70.0,
         backgroundColor: const Color(0xFFAAEA61),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.logout),
-        //     onPressed: _signOut,
-        //     tooltip: 'Log out',
-        //   ),
-        // ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -145,9 +191,8 @@ class _UserAccountPageState extends State<UserAccountPage> {
         child: Column(
           children: [
             GestureDetector(
-              //onTap: _uploadAvatar,
               child: CircleAvatar(
-                radius: 50,
+                radius: 65,
                 backgroundColor: const Color(0xFFBBBBBB),
                 backgroundImage:
                 _avatarUrl != null ? NetworkImage(_avatarUrl!) : null,
@@ -157,100 +202,89 @@ class _UserAccountPageState extends State<UserAccountPage> {
                       ? _displayName![0].toUpperCase()
                       : 'U',
                   style: const TextStyle(
-                      fontSize: 36, color: Colors.white),
+                      fontSize: 65, color: Colors.white),
                 )
                     : null,
               ),
             ),
             const SizedBox(height: 12),
+
             Text(
-              _email ?? 'user@example.com',
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 8),
-            _isEditing
-                ? TextField(
-              controller: _nameController,
-              textAlign: TextAlign.center,
-              decoration: const InputDecoration(
-                hintText: 'Enter display name',
-                hintStyle: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 15,
-                  color: Color(0xFF1B1B1B),
-                ),
-                contentPadding: EdgeInsets.only(top:15, left: 10, bottom: 10),
-                filled: true,
-                fillColor: Color(0xFFF3F3F3),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            )
-                : Text(
               _displayName ?? 'User',
               style: const TextStyle(
-                fontSize: 22,
+                fontFamily: 'Poppins',
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: Icon(_isEditing ? Icons.save : Icons.edit),
-              label: Text(_isEditing ? 'Save Name' : 'Edit',
-                style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 15,
-                color: Color(0xFF1B1B1B),
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFAAEA61),
-                foregroundColor: Colors.black,
-              ),
-              onPressed: _isEditing ? _updateDisplayName : () {
-                setState(() => _isEditing = true);
-              },
-            ),
-            const SizedBox(height: 30),
-            const Divider(),
-            const SizedBox(height: 250),
-            // ElevatedButton.icon(
-            //   onPressed: _signOut,
-            //   icon: const Icon(Icons.logout),
-            //   label: const Text('Log Out'),
-            //   style: ElevatedButton.styleFrom(
-            //     backgroundColor: Colors.redAccent,
-            //     foregroundColor: Colors.white,
-            //     padding: const EdgeInsets.symmetric(vertical: 14),
-            //   ),
-            // ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _signOut,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF6666),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text(
-                    'LOG OUT',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                color: Color(0xFF333333),
               ),
             ),
 
+            const SizedBox(height: 8),
+
+            Text(
+              _email ?? 'user@example.com',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF6E6E6E),
+              ),
+            ),
+
+            const SizedBox(height: 30),
+            const Divider(color: Color(0xFFEEEEEE), thickness: 1.5),
+
+            const SizedBox(height: 250),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                label: Text(
+                  _isEditing ? 'SAVE NAME' : 'EDIT NAME',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF333333),
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFAAEA61),
+                  foregroundColor: const Color(0xFF333333),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  _showEditNameDialog();
+                },
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _signOut,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF6666),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  'LOG OUT',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
